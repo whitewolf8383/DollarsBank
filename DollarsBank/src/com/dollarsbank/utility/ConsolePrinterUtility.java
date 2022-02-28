@@ -63,6 +63,12 @@ public class ConsolePrinterUtility {
 		System.out.println("+-----------------------+" + ColorsUtility.RESET);
 	}
 	
+	public static void accountCreadtedHeading() {
+		System.out.println(ColorsUtility.GREEN + "+--------------------------+");
+		System.out.println("| Account has been created |");
+		System.out.println("+--------------------------+" + ColorsUtility.RESET);
+	}
+	
 	public static void mainMenu() {
 		System.out.println("1. Create New Account");
 		System.out.println("2. Login");
@@ -76,6 +82,12 @@ public class ConsolePrinterUtility {
 		System.out.println("4. View 5 Recent Transactions");
 		System.out.println("5. Display Customer Information");
 		System.out.println("6. Sign Out");
+	}
+	
+	public static void exitHeading() {
+		System.out.println(ColorsUtility.BLUE + "+-----------------------------------------------+");
+		System.out.println("| Now Exiting, Thank You for using Dollars Bank! |");
+		System.out.println("+-----------------------------------------------+" + ColorsUtility.RESET);
 	}
 	
 }

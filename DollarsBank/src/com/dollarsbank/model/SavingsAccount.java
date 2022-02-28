@@ -1,6 +1,10 @@
 package com.dollarsbank.model;
 
-public class SavingsAccount {
+import java.io.Serializable;
+
+public class SavingsAccount implements Serializable {
+	
+	private static final long serialVersionUID = -4523539885513752159L;
 	
 	// Attributes
 	private int accountNumber;
@@ -32,7 +36,7 @@ public class SavingsAccount {
 
 	@Override
 	public String toString() {
-		return "SavingsAccount [userID=" + userID + "accountNumber=" + accountNumber + ", amount=" + amount + "]";
+		return "SavingsAccount [userID= " + userID + ", accountNumber=" + accountNumber + ", amount=" + amount + "]";
 	}
 	
 }

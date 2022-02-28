@@ -1,12 +1,49 @@
 package com.collarsbank.application;
 
+import java.util.Scanner;
+
+import com.dollarsbank.controller.DollarsBankController;
 import com.dollarsbank.utility.ConsolePrinterUtility;
 
 public class DollarsBankApplication {
 
 	public static void main(String[] args) {
+		Scanner scanner = new Scanner(System.in);
+		String selection = "";
 		
 		ConsolePrinterUtility.welcomeHeading();
+		do {
+			ConsolePrinterUtility.mainMenu();
+			selection = scanner.nextLine().trim();
+			
+			switch(selection) {
+				case "1":
+					
+					DollarsBankController.createNewAccount();
+					
+					break;
+					
+				case "2":
+					System.out.println("Called 'Login'");
+					break;
+				case "3": break;
+				default:
+					System.out.println("Input is invalid. Please enter 1, 2, or 3 only.");
+			}
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+		} while(!selection.equals("3"));
+		
+		scanner.close();
+		ConsolePrinterUtility.exitHeading();
 
 	}
 

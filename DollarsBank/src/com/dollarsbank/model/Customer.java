@@ -1,6 +1,11 @@
 package com.dollarsbank.model;
 
-public class Customer {
+import java.io.Serializable;
+
+public class Customer implements Serializable {
+	
+	private static final long serialVersionUID = -977293727194714630L;
+	
 	// Attributes
 	private int userID;
 	private String customerName;
