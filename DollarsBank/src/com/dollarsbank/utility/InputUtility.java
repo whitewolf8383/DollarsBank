@@ -16,7 +16,7 @@ public class InputUtility {
 	}
 	
 	public static boolean checkForSpecialCharaters(String testString) {
-        Pattern pattern = Pattern.compile("[^a-zA-Z0-9]");
+        Pattern pattern = Pattern.compile("[^a-zA-Z0-9 ]");
         Matcher matcher = pattern.matcher(testString);
         boolean isStringContainsSpecialCharacter = matcher.find();
         if(isStringContainsSpecialCharacter)
@@ -24,5 +24,35 @@ public class InputUtility {
         else    
             return false;
     }
+	
+	public static boolean checkForLetters(String testString) {
+		char[] chars = testString.toCharArray();
+		for(char c : chars) {
+			if(!Character.isDigit(c)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public static boolean checkForStringLength(String testString) {
+		int length = testString.length();
+		if (length == 10) return false;
+		return true;
+	}
+	
+	public static boolean checkPasswordStringLength(String testString) {
+		int length = testString.length();
+		if (length < 8) return true;
+		return false;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
 	
 }

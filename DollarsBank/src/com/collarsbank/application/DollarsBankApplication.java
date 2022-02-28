@@ -15,36 +15,20 @@ public class DollarsBankApplication {
 		do {
 			ConsolePrinterUtility.mainMenu();
 			selection = scanner.nextLine().trim();
-			
 			switch(selection) {
 				case "1":
-					
 					DollarsBankController.createNewAccount();
-					
 					break;
-					
 				case "2":
-					System.out.println("Called 'Login'");
+					DollarsBankController.login();
 					break;
 				case "3": break;
 				default:
 					System.out.println("Input is invalid. Please enter 1, 2, or 3 only.");
 			}
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
 		} while(!selection.equals("3"));
-		
 		scanner.close();
 		ConsolePrinterUtility.exitHeading();
-
 	}
 
 }

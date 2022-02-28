@@ -39,7 +39,7 @@ public class ConsolePrinterUtility {
 		System.out.println("+----------+" + ColorsUtility.RESET);
 	}
 	
-	public static void fundsHeading() {
+	public static void transferHeading() {
 		System.out.println(ColorsUtility.BLUE + "+----------+");
 		System.out.println("| Transfer |");
 		System.out.println("+----------+" + ColorsUtility.RESET);
