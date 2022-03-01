@@ -217,7 +217,7 @@ public class DollarsBankController {
 					
 					
 				} else if((customer.getUserID() == (Integer.parseInt(userID))) && !(customer.getPassword().equals(password))) {
-					System.out.println(ColorsUtility.RED + "Invalid Credentials. Try Again!");
+					System.out.println(ColorsUtility.RED + "Invalid Credentials. Try Again!" + ColorsUtility.RESET + "\n");
 				}
 				
 			}
