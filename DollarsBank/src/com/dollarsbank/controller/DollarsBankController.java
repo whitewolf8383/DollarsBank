@@ -1,5 +1,6 @@
 package com.dollarsbank.controller;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
@@ -7,6 +8,7 @@ import com.dollarsbank.exceptions.InvalidInputException;
 import com.dollarsbank.model.CheckingAccount;
 import com.dollarsbank.model.Customer;
 import com.dollarsbank.model.SavingsAccount;
+import com.dollarsbank.model.Transaction;
 import com.dollarsbank.utility.ColorsUtility;
 import com.dollarsbank.utility.ConsolePrinterUtility;
 import com.dollarsbank.utility.InputUtility;
@@ -112,11 +114,13 @@ public class DollarsBankController {
 			Customer newCustomer = new Customer(userID, customerName, address, contactNumber, password);
 			CheckingAccount newCheckingAccount = new CheckingAccount(amount, userID);
 			SavingsAccount newSavingsAccount = new SavingsAccount(0, userID);
+			Transaction newTransaction = new Transaction(String.valueOf(userID), "New account created with inital deposit", amount);
 			
 			// Store Accounts
 			Customers.add(newCustomer);
 			CheckingAccounts.add(newCheckingAccount);
 			SavingsAccounts.add(newSavingsAccount);
+			Transactions.add(newTransaction);
 			
 			System.out.println("New customer created with ID: " + userID);
 			
@@ -187,6 +191,7 @@ public class DollarsBankController {
 						System.out.println("\n");
 						System.out.println("Enter Choice (1, 2, 3, 4, 5, 6) :");
 						userInput = customerInput.nextLine().trim();
+						System.out.println("\n");
 						switch(userInput) {
 							case "1":
 								deposit(userID);
@@ -238,6 +243,7 @@ public class DollarsBankController {
 			System.out.println("2. Savings");
 			System.out.println("3. Exit Deposit");
 			userInput = customerInput.nextLine().trim();
+			System.out.println("\n");
 			
 			switch(userInput) {
 				case "1":
@@ -251,6 +257,9 @@ public class DollarsBankController {
 						for(CheckingAccount checkingAccount : CheckingAccounts) {
 							if(checkingAccount.getUserID() == (Integer.parseInt(userID))) {
 								checkingAccount.setAmount( (checkingAccount.getAmount() + depositAmount) );
+								Transaction newTransaction = new Transaction(userID, "Deposited into checking account", depositAmount);
+								Transactions.add(newTransaction);
+								System.out.println("Successfully deposited into checking account \n.");
 							}
 						}
 					}
@@ -267,6 +276,9 @@ public class DollarsBankController {
 						for(SavingsAccount savingsAccount : SavingsAccounts) {
 							if(savingsAccount.getUserID() == (Integer.parseInt(userID))) {
 								savingsAccount.setAmount( (savingsAccount.getAmount() + depositAmount) );
+								Transaction newTransaction = new Transaction(userID, "Deposited into savings account", depositAmount);
+								Transactions.add(newTransaction);
+								System.out.println("Successfully deposited into savings account \n.");
 							}
 						}
 					}
@@ -294,6 +306,7 @@ public class DollarsBankController {
 			System.out.println("2. Savings");
 			System.out.println("3. Exit Withdraw");
 			userInput = customerInput.nextLine().trim();
+			System.out.println("\n");
 			
 			switch(userInput) {
 				case "1":
@@ -308,6 +321,9 @@ public class DollarsBankController {
 							if(checkingAccount.getUserID() == (Integer.parseInt(userID))) {
 								if((checkingAccount.getAmount() - withdrawAmount) < 0) throw new InvalidInputException("Withdraw amount is greater than amount available.");
 								else checkingAccount.setAmount( (checkingAccount.getAmount() - withdrawAmount) );
+								Transaction newTransaction = new Transaction(userID, "Withdraw from checking account", withdrawAmount);
+								Transactions.add(newTransaction);
+								System.out.println("Successfully withdrew from checking account \n.");
 							}
 						}
 					}
@@ -325,6 +341,9 @@ public class DollarsBankController {
 							if(savingsAccount.getUserID() == (Integer.parseInt(userID))) {
 								if((savingsAccount.getAmount() - withdrawAmount) < 0) throw new InvalidInputException("Withdraw amount is greater than amount available.");
 								else savingsAccount.setAmount( (savingsAccount.getAmount() - withdrawAmount) );
+								Transaction newTransaction = new Transaction(userID, "Withdraw from savings account", withdrawAmount);
+								Transactions.add(newTransaction);
+								System.out.println("Successfully withdrew from savings account \n.");
 							}
 						}
 					}
@@ -353,6 +372,7 @@ public class DollarsBankController {
 			System.out.println("2. Savings => Checking");
 			System.out.println("3. Exit Transfer");
 			userInput = customerInput.nextLine().trim();
+			System.out.println("\n");
 			
 			switch(userInput) {
 				case "1":
@@ -373,6 +393,9 @@ public class DollarsBankController {
 								for(SavingsAccount savingsAccount : SavingsAccounts) {
 									if(savingsAccount.getUserID() == (Integer.parseInt(userID))) {
 										savingsAccount.setAmount( (savingsAccount.getAmount() + transferAmount) );
+										Transaction newTransaction = new Transaction(userID, "Transfered funds from checking to savings", transferAmount);
+										Transactions.add(newTransaction);
+										System.out.println("Successfully transfered funds from checking to savings account \n.");
 									}
 								}
 							}
@@ -398,6 +421,9 @@ public class DollarsBankController {
 								for(CheckingAccount checkingAccount : CheckingAccounts) {
 									if(checkingAccount.getUserID() == (Integer.parseInt(userID))) {
 										checkingAccount.setAmount( (checkingAccount.getAmount() + transferAmount) );
+										Transaction newTransaction = new Transaction(userID, "Transfered funds from savings to checking", transferAmount);
+										Transactions.add(newTransaction);
+										System.out.println("Successfully transfered funds from savings to checking account \n.");
 									}
 								}
 							}
@@ -415,14 +441,22 @@ public class DollarsBankController {
 	}
 	
 	public static void recentTransactions(String userID) {
+		int counter = 0;
 		System.out.println("\n");
 		ConsolePrinterUtility.transactionsHeading();
+		
+		for(Transaction transaction : Transactions) {
+			if((transaction.getUserID().equals(userID)) && (counter < 5)) {
+				System.out.println(transaction.toString());
+				counter++;
+			}
+		}
 		
 	}
 	
 	public static void customerInfo(String userID) {
 		System.out.println("\n");
-		ConsolePrinterUtility.customerHeading();
+		ConsolePrinterUtility.customerInfoHeading();
 		for(Customer customer : Customers) {
 			if(customer.getUserID() == (Integer.parseInt(userID))) {
 				System.out.println(customer.toString());
@@ -437,11 +471,10 @@ public class DollarsBankController {
 		}
 		for(SavingsAccount savingsAccount : SavingsAccounts) {
 			if(savingsAccount.getUserID() == (Integer.parseInt(userID))) {
-				System.out.println(savingsAccount.toString());
+				System.out.println(savingsAccount.toString() + "\n");
 				break;
 			}
 		}
-		
 	}
 	
 	public static void signout() {

@@ -80,7 +80,7 @@ public class ConsolePrinterUtility {
 		System.out.println("2. Withdraw Amount");
 		System.out.println("3. Funds Transfer");
 		System.out.println("4. View 5 Recent Transactions");
-		System.out.println("5. Display Customer Information");
+		System.out.println("5. Customer Information / Account Balances");
 		System.out.println("6. Sign Out");
 	}
 	
