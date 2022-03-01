@@ -14,6 +14,8 @@ public class DollarsBankApplication {
 		ConsolePrinterUtility.welcomeHeading();
 		do {
 			ConsolePrinterUtility.mainMenu();
+			System.out.println("\n");
+			System.out.println("Enter Choice (1, 2, 3) :");
 			selection = scanner.nextLine().trim();
 			switch(selection) {
 				case "1":

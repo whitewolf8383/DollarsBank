@@ -7,6 +7,7 @@ import com.dollarsbank.exceptions.InvalidInputException;
 import com.dollarsbank.model.CheckingAccount;
 import com.dollarsbank.model.Customer;
 import com.dollarsbank.model.SavingsAccount;
+import com.dollarsbank.utility.ColorsUtility;
 import com.dollarsbank.utility.ConsolePrinterUtility;
 import com.dollarsbank.utility.InputUtility;
 
@@ -16,6 +17,7 @@ public class DollarsBankController {
 	static List<Customer> Customers = new ArrayList<Customer>();
 	static List<CheckingAccount> CheckingAccounts = new ArrayList<CheckingAccount>();
 	static List<SavingsAccount> SavingsAccounts = new ArrayList<SavingsAccount>();
+	static List<Transaction> Transactions = new ArrayList<Transaction>(); 
 
 	// Create a new Customer Account
 	public static void createNewAccount() {
@@ -95,8 +97,7 @@ public class DollarsBankController {
 				stringTest = input.nextLine();
 				
 				if(stringTest.isBlank()) throw new InvalidInputException("Deposit cannot be blank.");
-				else if(InputUtility.checkForSpecialCharaters(stringTest)) throw new InvalidInputException("Deposit cannot contain special characters");
-				else if(InputUtility.checkForLetters(stringTest)) throw new InvalidInputException("Deposit cannot contain letters.");
+				else if(!InputUtility.checkForMoneyDeposit(stringTest)) throw new InvalidInputException("Deposit cannot contain special characters or letters");
 				else {
 					doubleTest = Double.parseDouble(stringTest);
 					if(doubleTest < 100) throw new InvalidInputException("Inital deposit must be 100 or greater in value.");
@@ -117,6 +118,8 @@ public class DollarsBankController {
 			CheckingAccounts.add(newCheckingAccount);
 			SavingsAccounts.add(newSavingsAccount);
 			
+			System.out.println("New customer created with ID: " + userID);
+			
 			ConsolePrinterUtility.accountCreadtedHeading();
 			
 		} catch (Exception e) {
@@ -130,7 +133,6 @@ public class DollarsBankController {
 	public static void login() {
 		Scanner input = new Scanner(System.in);
 		String userID = "", password = "", inputTest = "";
-		int counter = 0;
 		
 		System.out.println("\n");
 		ConsolePrinterUtility.loginHeading();
@@ -163,7 +165,6 @@ public class DollarsBankController {
 				inputTest = input.nextLine();
 				
 				if(inputTest.isBlank()) throw new InvalidInputException("Password cannot be blank.");
-				else if(inputTest.length() != 6) throw new InvalidInputException("Password must be at least 8 characters in length.");
 				else {
 					password = inputTest;
 					loginCheck = false;
@@ -171,14 +172,50 @@ public class DollarsBankController {
 			}
 			
 			// Check customers for correct login
-			
-			
-			
-			
-			
-			
-			
-			
+			for(Customer customer : Customers) {
+				if((customer.getUserID() == (Integer.parseInt(userID))) && (customer.getPassword().equals(password))) {
+					
+					Scanner customerInput = new Scanner(System.in);
+					String userInput = "";
+					
+					System.out.println("\n");
+					ConsolePrinterUtility.customerHeading();
+					
+					
+					do {
+						ConsolePrinterUtility.customerMenu();
+						System.out.println("\n");
+						System.out.println("Enter Choice (1, 2, 3, 4, 5, 6) :");
+						userInput = customerInput.nextLine().trim();
+						switch(userInput) {
+							case "1":
+								deposit(userID);
+								break;
+							case "2":
+								withdraw(userID);
+								break;
+							case "3": 
+								transfer(userID);
+								break;
+							case "4": 
+								recentTransactions(userID);
+								break;
+							case "5":
+								customerInfo(userID);
+								break;
+							case "6": signout();
+								break;
+							default:
+								System.out.println("Input is invalid. Please enter 1, 2, 3, 4, 5, or 6 only.");
+						}
+					} while(!userInput.equals("6"));
+					
+					
+				} else if((customer.getUserID() == (Integer.parseInt(userID))) && !(customer.getPassword().equals(password))) {
+					System.out.println(ColorsUtility.RED + "Invalid Credentials. Try Again!");
+				}
+				
+			}
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -187,83 +224,223 @@ public class DollarsBankController {
 	
 	
 	
-	public static void userAccounts() {
-		Scanner input = new Scanner(System.in);
-		String userInput = "";
-		
-		System.out.println("\n");
-		ConsolePrinterUtility.customerHeading();
-		
-		do {
-			ConsolePrinterUtility.mainMenu();
-			userInput = input.nextLine().trim();
-			switch(userInput) {
-				case "1":
-					deposit();
-					break;
-				case "2":
-					withdraw();
-					break;
-				case "3": 
-					transfer();
-					break;
-				case "4": 
-					recentTransactions();
-					break;
-				case "5":
-					customerInfo();
-					break;
-				case "6": signout();
-					break;
-				default:
-					System.out.println("Input is invalid. Please enter 1, 2, or 3 only.");
-			}
-		} while(!userInput.equals("6"));
-		
-		
-		
-	}
 	
-	
-	public static void deposit() {
-		
+	public static void deposit(String userID) throws InvalidInputException {
+		Scanner customerInput = new Scanner(System.in);
+		String userInput = "", depositTest = "";
+		double depositAmount = 0.00;
 		
 		System.out.println("\n");
 		ConsolePrinterUtility.depositHeading();
-		
+		do {
+			System.out.println("Which account would you like to deposit to?");
+			System.out.println("1. Checking");
+			System.out.println("2. Savings");
+			System.out.println("3. Exit Deposit");
+			userInput = customerInput.nextLine().trim();
+			
+			switch(userInput) {
+				case "1":
+					System.out.println("Enter amount to deposit to Checking");
+					depositTest = customerInput.nextLine();
+					
+					if(depositTest.isBlank()) throw new InvalidInputException("Deposit cannot be blank.");
+					else if(!InputUtility.checkForMoneyDeposit(depositTest)) throw new InvalidInputException("Deposit cannot contain special characters or letters");
+					else {
+						depositAmount = Double.parseDouble(depositTest);
+						for(CheckingAccount checkingAccount : CheckingAccounts) {
+							if(checkingAccount.getUserID() == (Integer.parseInt(userID))) {
+								checkingAccount.setAmount( (checkingAccount.getAmount() + depositAmount) );
+							}
+						}
+					}
+					break;
+					
+				case "2":
+					System.out.println("Enter amount to deposit to Savings");
+					depositTest = customerInput.nextLine();
+					
+					if(depositTest.isBlank()) throw new InvalidInputException("Deposit cannot be blank.");
+					else if(!InputUtility.checkForMoneyDeposit(depositTest)) throw new InvalidInputException("Deposit cannot contain special characters or letters");
+					else {
+						depositAmount = Double.parseDouble(depositTest);
+						for(SavingsAccount savingsAccount : SavingsAccounts) {
+							if(savingsAccount.getUserID() == (Integer.parseInt(userID))) {
+								savingsAccount.setAmount( (savingsAccount.getAmount() + depositAmount) );
+							}
+						}
+					}
+					break;
+					
+				case "3": break;
+				default:
+					System.out.println("Input is invalid. Please enter 1, 2, or 3 only.");
+			}
+				
+		} while(!userInput.equals("3"));
 	}
 	
 	
-	public static void withdraw() {
-		
+	public static void withdraw(String userID) throws InvalidInputException {
+		Scanner customerInput = new Scanner(System.in);
+		String userInput = "", withdrawTest = "";
+		double withdrawAmount = 0.00;
 		
 		System.out.println("\n");
 		ConsolePrinterUtility.withdrawHeading();
+		do {
+			System.out.println("Which account would you like to withdraw from?");
+			System.out.println("1. Checking");
+			System.out.println("2. Savings");
+			System.out.println("3. Exit Withdraw");
+			userInput = customerInput.nextLine().trim();
+			
+			switch(userInput) {
+				case "1":
+					System.out.println("Enter amount to withdraw from Checking");
+					withdrawTest = customerInput.nextLine();
+					
+					if(withdrawTest.isBlank()) throw new InvalidInputException("Amount cannot be blank.");
+					else if(!InputUtility.checkForMoneyDeposit(withdrawTest)) throw new InvalidInputException("Amount cannot contain special characters or letters");
+					else {
+						withdrawAmount = Double.parseDouble(withdrawTest);
+						for(CheckingAccount checkingAccount : CheckingAccounts) {
+							if(checkingAccount.getUserID() == (Integer.parseInt(userID))) {
+								if((checkingAccount.getAmount() - withdrawAmount) < 0) throw new InvalidInputException("Withdraw amount is greater than amount available.");
+								else checkingAccount.setAmount( (checkingAccount.getAmount() - withdrawAmount) );
+							}
+						}
+					}
+					break;
+					
+				case "2":
+					System.out.println("Enter amount to withdraw from Savings");
+					withdrawTest = customerInput.nextLine();
+					
+					if(withdrawTest.isBlank()) throw new InvalidInputException("Amount cannot be blank.");
+					else if(!InputUtility.checkForMoneyDeposit(withdrawTest)) throw new InvalidInputException("Amount cannot contain special characters or letters");
+					else {
+						withdrawAmount = Double.parseDouble(withdrawTest);
+						for(SavingsAccount savingsAccount : SavingsAccounts) {
+							if(savingsAccount.getUserID() == (Integer.parseInt(userID))) {
+								if((savingsAccount.getAmount() - withdrawAmount) < 0) throw new InvalidInputException("Withdraw amount is greater than amount available.");
+								else savingsAccount.setAmount( (savingsAccount.getAmount() - withdrawAmount) );
+							}
+						}
+					}
+					break;
+					
+				case "3": break;
+				default:
+					System.out.println("Input is invalid. Please enter 1, 2, or 3 only.");
+			}
+				
+		} while(!userInput.equals("3"));
 		
 	}
 	
 	
-	public static void transfer() {
-		
+	public static void transfer(String userID) throws InvalidInputException {
+		Scanner customerInput = new Scanner(System.in);
+		String userInput = "", transferTest = "";
+		double transferAmount = 0.00;
 		
 		System.out.println("\n");
 		ConsolePrinterUtility.transferHeading();
-		
+		do {
+			System.out.println("Which account would you like to transfer?");
+			System.out.println("1. Checking => Savings");
+			System.out.println("2. Savings => Checking");
+			System.out.println("3. Exit Transfer");
+			userInput = customerInput.nextLine().trim();
+			
+			switch(userInput) {
+				case "1":
+					System.out.println("Enter amount you want to transfer.");
+					transferTest = customerInput.nextLine();
+					
+					if(transferTest.isBlank()) throw new InvalidInputException("Amount cannot be blank.");
+					else if(!InputUtility.checkForMoneyDeposit(transferTest)) throw new InvalidInputException("Amount cannot contain special characters or letters");
+					else {
+						transferAmount = Double.parseDouble(transferTest);
+					}
+					
+					for(CheckingAccount checkingAccount : CheckingAccounts) {
+						if(checkingAccount.getUserID() == (Integer.parseInt(userID))) {
+							if((checkingAccount.getAmount() - transferAmount) < 0) throw new InvalidInputException("Transfer amount is greater than amount available.");
+							else {
+								checkingAccount.setAmount( (checkingAccount.getAmount() - transferAmount) );
+								for(SavingsAccount savingsAccount : SavingsAccounts) {
+									if(savingsAccount.getUserID() == (Integer.parseInt(userID))) {
+										savingsAccount.setAmount( (savingsAccount.getAmount() + transferAmount) );
+									}
+								}
+							}
+						}
+					}
+					break;
+					
+				case "2":
+					System.out.println("Enter amount you want to transfer.");
+					transferTest = customerInput.nextLine();
+					
+					if(transferTest.isBlank()) throw new InvalidInputException("Amount cannot be blank.");
+					else if(!InputUtility.checkForMoneyDeposit(transferTest)) throw new InvalidInputException("Amount cannot contain special characters or letters");
+					else {
+						transferAmount = Double.parseDouble(transferTest);
+					}
+					
+					for(SavingsAccount savingsAccount : SavingsAccounts) {
+						if(savingsAccount.getUserID() == (Integer.parseInt(userID))) {
+							if((savingsAccount.getAmount() - transferAmount) < 0) throw new InvalidInputException("Transfer amount is greater than amount available.");
+							else {
+								savingsAccount.setAmount( (savingsAccount.getAmount() - transferAmount) );
+								for(CheckingAccount checkingAccount : CheckingAccounts) {
+									if(checkingAccount.getUserID() == (Integer.parseInt(userID))) {
+										checkingAccount.setAmount( (checkingAccount.getAmount() + transferAmount) );
+									}
+								}
+							}
+						}
+					}
+					break;
+					
+				case "3": break;
+				default:
+					System.out.println("Input is invalid. Please enter 1, 2, or 3 only.");
+			}
+				
+		} while(!userInput.equals("3"));
+	
 	}
 	
-	public static void recentTransactions() {
-		
-		
+	public static void recentTransactions(String userID) {
 		System.out.println("\n");
 		ConsolePrinterUtility.transactionsHeading();
 		
 	}
 	
-	public static void customerInfo() {
-		
-		
+	public static void customerInfo(String userID) {
 		System.out.println("\n");
 		ConsolePrinterUtility.customerHeading();
+		for(Customer customer : Customers) {
+			if(customer.getUserID() == (Integer.parseInt(userID))) {
+				System.out.println(customer.toString());
+				break;
+			}
+		}
+		for(CheckingAccount checkingAccount : CheckingAccounts) {
+			if(checkingAccount.getUserID() == (Integer.parseInt(userID))) {
+				System.out.println(checkingAccount.toString());
+				break;
+			}
+		}
+		for(SavingsAccount savingsAccount : SavingsAccounts) {
+			if(savingsAccount.getUserID() == (Integer.parseInt(userID))) {
+				System.out.println(savingsAccount.toString());
+				break;
+			}
+		}
 		
 	}
 	
